@@ -2,217 +2,287 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FML Importer Platform - Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FML Dashboard</title>
+    <!-- Use standard CSS for layout to avoid any Tailwind JS blocking issues -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0a0a0b; color: #f3f4f6; }
-        .bg-dark-card { background-color: #161618; border: 1px solid #1f2937; }
-        .bg-dark-sidebar { background-color: #0a0a0b; border-right: 1px solid #1f2937; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0a0a0b; 
+            color: #f3f4f6; 
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* EMERGENCY: Ensure nothing is capturing pointer events on the body */
+        html, body {
+            pointer-events: auto !important;
+        }
+
+        header {
+            background-color: #0a0a0b;
+            border-bottom: 1px solid #1f2937;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo { color: #3b82f6; font-weight: 800; font-size: 1.25rem; letter-spacing: -0.05em; }
+
+        main {
+            flex: 1;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        .card {
+            background-color: #161618;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            /* Ensure cards are tappable */
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-header {
+            background-color: #1c1c1f;
+            padding: 16px;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background-color: #161618;
+            border: 1px solid #1f2937;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .stat-val { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
+        .stat-label { font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; }
+
+        .btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            touch-action: manipulation;
+        }
+
+        .btn:active { background-color: #b91c1c; transform: scale(0.98); }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #0a0a0b;
+            border-top: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: #6b7280;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+            width: 33%;
+        }
+
+        .nav-item.active { color: #3b82f6; }
+        .nav-label { font-size: 10px; font-weight: 700; margin-top: 4px; }
+
+        .hidden { display: none !important; }
+
+        /* Icon fallback since font-awesome might fail */
+        .icon { width: 20px; height: 20px; border: 2px solid currentColor; border-radius: 4px; display: inline-block; }
     </style>
 </head>
-<body class="h-screen overflow-hidden">
-    <div class="flex h-full">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-dark-sidebar flex flex-col">
-            <div class="p-6 border-b border-gray-800">
-                <h1 class="text-xl font-bold text-blue-500 tracking-tighter">FML PLATFORM</h1>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                    <i class="fas fa-th-large"></i>
-                    <span class="font-medium">Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
-                    <i class="fas fa-box"></i>
-                    <span class="font-medium">Shipments</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
-                    <i class="fas fa-truck"></i>
-                    <span class="font-medium">Deliveries</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span class="font-medium">Risk Alerts</span>
-                </a>
-            </nav>
-            <div class="p-4 border-t border-gray-800">
-                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-400 hover:bg-gray-800 transition">
-                    <i class="fas fa-cog"></i>
-                    <span class="font-medium">Settings</span>
-                </a>
-            </div>
-        </aside>
+<body>
+    <header>
+        <div class="logo">FML PLATFORM</div>
+        <div style="background: #2563eb; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">NZ</div>
+    </header>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto p-8">
-            <header class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold">Logistics Overview</h2>
-                    <p class="text-gray-400 text-sm mt-1">Welcome back, Nathan. Your logistics brain is active.</p>
+    <main>
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard">
+            <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Logistics Overview</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">In Transit</div>
+                    <div class="stat-val">12</div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                        <input type="text" placeholder="Search MBL, Container..." class="bg-[#161618] border border-gray-800 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64">
-                    </div>
-                    <button class="p-2 bg-gray-800/50 hover:bg-gray-800 rounded-lg relative">
-                        <i class="far fa-bell"></i>
-                        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold">NZ</div>
-                </div>
-            </header>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-dark-card p-6 rounded-xl">
-                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">In Transit</div>
-                    <div class="text-3xl font-bold">12</div>
-                    <div class="flex justify-between items-center mt-2 text-[10px] font-bold">
-                        <span class="text-gray-500 uppercase">8 Ships, 4 Trucks</span>
-                        <span class="text-green-500">+2 NEW</span>
-                    </div>
-                </div>
-                <div class="bg-dark-card p-6 rounded-xl border-l-4 border-yellow-500">
-                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Pending Duty</div>
-                    <div class="text-3xl font-bold text-yellow-500">$24,500</div>
-                    <div class="text-[10px] font-bold text-gray-500 uppercase mt-2">Payable within 7 days</div>
-                </div>
-                <div class="bg-dark-card p-6 rounded-xl">
-                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Avg Dwell</div>
-                    <div class="text-3xl font-bold">2.4 <span class="text-sm">Days</span></div>
-                    <div class="text-[10px] font-bold text-blue-400 uppercase mt-2">Port of Newark</div>
-                </div>
-                <div class="bg-dark-card p-6 rounded-xl border-l-4 border-red-500">
-                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Detention Risk</div>
-                    <div class="text-3xl font-bold text-red-500">2</div>
-                    <div class="text-[10px] font-bold text-red-400 uppercase mt-2">Action Required</div>
+                <div class="stat-box" style="border-left: 4px solid #eab308;">
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-val" style="color: #eab308;">$24k</div>
                 </div>
             </div>
 
-            <!-- Shipment Detail Card (MATCHING SCREENSHOT) -->
-            <div class="bg-dark-card rounded-xl overflow-hidden mb-8 shadow-2xl">
-                <div class="p-6 bg-[#1c1c1f] border-b border-gray-800 flex justify-between items-center">
+            <div class="card">
+                <div class="card-header" id="shipment-header">
                     <div>
-                        <div class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-1">Master Bill of Lading</div>
-                        <h3 class="text-2xl font-mono font-bold tracking-tight uppercase">HLCUMA3260472865</h3>
+                        <div style="font-size: 9px; font-weight: 700; color: #60a5fa; text-transform: uppercase;">MBL Tracking</div>
+                        <div style="font-family: monospace; font-weight: 700; font-size: 1.1rem;">HLCUMA3260472865</div>
                     </div>
-                    <div class="bg-blue-500/10 text-blue-500 px-4 py-2 rounded-lg border border-blue-500/20 text-sm font-bold flex items-center">
-                        <i class="far fa-calendar-check mr-2"></i> ETA: Wednesday, June 3, 2026
-                    </div>
+                    <div id="chevron" style="transition: 0.3s;">▼</div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3">
-                    <div class="p-6 border-r border-gray-800 space-y-6">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Financial Ledger</h4>
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-300"><i class="fas fa-ship mr-2 text-gray-600"></i> Freight Cost</span>
-                                    <span class="font-mono font-bold text-lg">$3,415.00</span>
-                                </div>
-                                <div class="flex justify-between items-center text-yellow-500">
-                                    <span class="text-sm font-bold uppercase tracking-tighter"><i class="fas fa-file-invoice-dollar mr-2"></i> Duty Amount</span>
-                                    <span class="font-mono font-bold text-lg">$1,250.00</span>
-                                </div>
-                                <div class="pt-4 border-t border-gray-800 flex justify-between items-center">
-                                    <span class="text-xs font-bold text-gray-500 uppercase">Total Estimated</span>
-                                    <span class="text-2xl font-bold">$4,665.00</span>
-                                </div>
-                            </div>
-                        </div>
+                <div class="card-body" id="shipment-content">
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 16px;">
+                        <span style="color: #9ca3af;">ETA</span>
+                        <span style="font-weight: 700; color: #60a5fa;">June 3, 2026</span>
                     </div>
-                    <div class="p-6 lg:col-span-2">
-                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Container Intelligence</h4>
-                        <div class="bg-[#0a0a0b] border border-gray-800 rounded-xl p-5">
-                            <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-800">
-                                <div class="flex items-center">
-                                    <div class="bg-blue-500 w-2 h-8 rounded-full mr-4"></div>
-                                    <div>
-                                        <div class="text-lg font-mono font-black text-blue-400">HLXU8415406</div>
-                                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">40' HIGH CUBE CONTAINER</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-green-500 text-xs font-bold uppercase"><i class="fas fa-circle text-[8px] mr-1 animate-pulse"></i> In Transit</div>
-                                    <div class="text-[10px] text-gray-600 font-mono mt-1">Sailing: Antwerp > New York</div>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="bg-[#161618] border border-gray-800 p-4 rounded-lg relative overflow-hidden group hover:border-gray-600 transition">
-                                    <div class="text-[10px] font-bold text-gray-500 uppercase mb-1">Consignee 01</div>
-                                    <div class="text-xl font-black tracking-tighter uppercase">HASELSON</div>
-                                    <div class="mt-2 text-2xl font-mono font-bold text-white">400 <span class="text-xs text-gray-600 uppercase">CTNS</span></div>
-                                    <i class="fas fa-box-open absolute -right-2 -bottom-2 text-gray-800/20 text-5xl rotate-12"></i>
-                                </div>
-                                <div class="bg-[#161618] border border-gray-800 p-4 rounded-lg relative overflow-hidden group hover:border-gray-600 transition">
-                                    <div class="text-[10px] font-bold text-gray-500 uppercase mb-1">Consignee 02</div>
-                                    <div class="text-xl font-black tracking-tighter uppercase">REASON CLOTHING</div>
-                                    <div class="mt-2 text-2xl font-mono font-bold text-white">200 <span class="text-xs text-gray-600 uppercase">CTNS</span></div>
-                                    <i class="fas fa-tshirt absolute -right-2 -bottom-2 text-gray-800/20 text-5xl rotate-12"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex justify-between items-center bg-blue-500/5 p-3 rounded-lg border border-blue-500/10">
-                                <span class="text-[10px] font-black text-blue-300 uppercase tracking-widest">Total Payload</span>
-                                <span class="font-mono font-bold text-blue-400">600 CTNS / 14,200 KG</span>
-                            </div>
+                    <div style="background: #0a0a0b; padding: 12px; border-radius: 8px; border: 1px solid #1f2937;">
+                        <div style="font-size: 10px; font-weight: 700; color: #6b7280; margin-bottom: 8px;">CONTAINER: HLXU8415406</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div style="background: #161618; padding: 8px; border-radius: 4px; font-size: 10px;">HASELSON: 400</div>
+                            <div style="background: #161618; padding: 8px; border-radius: 4px; font-size: 10px;">REASON: 200</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Risks & Timeline -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-dark-card p-6 rounded-xl">
-                    <h4 class="font-bold mb-6 flex items-center border-b border-gray-800 pb-4">
-                        <i class="fas fa-robot mr-3 text-blue-500"></i> AI Logistics Agent
-                    </h4>
-                    <div class="space-y-4">
-                        <div class="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                            <div class="flex items-center text-red-500 text-xs font-black uppercase mb-2">
-                                <i class="fas fa-radiation-alt mr-2"></i> Critical Risk Warning
-                            </div>
-                            <p class="text-sm text-gray-300 leading-relaxed">
-                                <span class="font-bold text-white">LFD Probability Alert:</span> Terminal congestion at APM Terminals is increasing. Probability of missing <span class="text-red-400">Last Free Date</span> for HLXU8415406 is currently <span class="font-bold text-red-500">82%</span> based on historical discharge dwell times.
-                            </p>
-                            <div class="mt-4 flex space-x-3">
-                                <button class="bg-red-600 hover:bg-red-500 text-white text-[10px] font-black uppercase px-4 py-2 rounded-md tracking-widest transition">Notify Dispatch</button>
-                                <button class="border border-red-500/30 text-red-400 text-[10px] font-black uppercase px-4 py-2 rounded-md tracking-widest transition hover:bg-red-500/10">Dismiss</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-dark-card p-6 rounded-xl">
-                    <h4 class="font-bold mb-6 flex items-center border-b border-gray-800 pb-4">
-                        <i class="fas fa-history mr-3 text-blue-500"></i> Event Stream
-                    </h4>
-                    <div class="space-y-6">
-                        <div class="flex items-start">
-                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mr-4">
-                                <i class="fas fa-envelope-open-text text-xs"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm font-bold uppercase tracking-tight">Arrival Notice Ingested</div>
-                                <div class="text-xs text-gray-500 mt-1 uppercase font-mono">MBL: HLCUMA3260472865 | SENDER: FML LOGISTICS</div>
-                                <div class="text-[9px] text-gray-600 font-bold mt-1 uppercase">Today, 2:01 PM</div>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-500 mr-4">
-                                <i class="fas fa-file-invoice text-xs"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-sm font-bold uppercase tracking-tight">Customs Invoice Detected</div>
-                                <div class="text-xs text-gray-500 mt-1 uppercase font-mono">AMOUNT: $1,250.00 | HAWB: TUTOE2600182</div>
-                                <div class="text-[9px] text-gray-600 font-bold mt-1 uppercase">Today, 11:45 AM</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 16px; border-radius: 12px;">
+                <div style="color: #ef4444; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Critical Risk</div>
+                <p style="font-size: 12px; color: #d1d5db; line-height: 1.5; margin-bottom: 16px;">
+                    Terminal congestion alert: 82% risk of Detention for HLXU8415406.
+                </p>
+                <button class="btn" id="notify-btn">NOTIFY DISPATCH</button>
             </div>
-        </main>
-    </div>
+        </div>
+
+        <!-- SHIPMENTS VIEW -->
+        <div id="view-shipments" class="hidden">
+            <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Shipments</h2>
+            <div class="card" style="padding: 40px; text-align: center;">
+                <div style="font-size: 10px; font-weight: 700; color: #6b7280; text-transform: uppercase;">Syncing Label...</div>
+                <div style="margin-top: 16px; color: #3b82f6; font-weight: 700;">Label_6170267226485901986</div>
+            </div>
+        </div>
+
+        <!-- SETTINGS VIEW -->
+        <div id="view-settings" class="hidden">
+            <h2 style="font-size: 1.5rem; margin-bottom: 24px;">Settings</h2>
+            <div class="stat-box">
+                <div class="stat-label">User</div>
+                <div class="stat-val" style="font-size: 1rem;">Nathan Zleta</div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-dash">
+            <div class="icon"></div>
+            <span class="nav-label">Dash</span>
+        </button>
+        <button class="nav-item" id="nav-ship">
+            <div class="icon"></div>
+            <span class="nav-label">Shipments</span>
+        </button>
+        <button class="nav-item" id="nav-set">
+            <div class="icon"></div>
+            <span class="nav-label">Settings</span>
+        </button>
+    </nav>
+
+    <script>
+        // Use Vanilla JS to ensure maximum compatibility and zero blocking
+        document.addEventListener('DOMContentLoaded', function() {
+            const views = {
+                dashboard: document.getElementById('view-dashboard'),
+                shipments: document.getElementById('view-shipments'),
+                settings: document.getElementById('view-settings')
+            };
+
+            const navs = {
+                dashboard: document.getElementById('nav-dash'),
+                shipments: document.getElementById('nav-ship'),
+                settings: document.getElementById('nav-set')
+            };
+
+            function switchTab(tabId) {
+                // Hide all views
+                Object.values(views).forEach(v => v.classList.add('hidden'));
+                Object.values(navs).forEach(n => n.classList.remove('active'));
+                
+                // Show active
+                views[tabId].classList.remove('hidden');
+                navs[tabId].classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo(0,0);
+            }
+
+            // Navigation listeners
+            navs.dashboard.onclick = () => switchTab('dashboard');
+            navs.shipments.onclick = () => switchTab('shipments');
+            navs.settings.onclick = () => switchTab('settings');
+
+            // Toggle Shipment Card
+            const shipHeader = document.getElementById('shipment-header');
+            const shipContent = document.getElementById('shipment-content');
+            const chevron = document.getElementById('chevron');
+            
+            shipHeader.onclick = function() {
+                if (shipContent.classList.contains('hidden')) {
+                    shipContent.classList.remove('hidden');
+                    chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    shipContent.classList.add('hidden');
+                    chevron.style.transform = 'rotate(-90deg)';
+                }
+            };
+
+            // Button listener
+            document.getElementById('notify-btn').onclick = function() {
+                alert('Success: Dispatcher has been notified of the detention risk for HLXU8415406.');
+            };
+
+            console.log('FML Dashboard JS Initialized');
+        });
+    </script>
 </body>
 </html>
